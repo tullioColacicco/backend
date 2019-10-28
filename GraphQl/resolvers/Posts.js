@@ -52,7 +52,7 @@ module.exports = {
         username: user.username,
         createdAt: new Date().toISOString()
       });
-      newPost.populate("User");
+
       const post = await newPost.save();
 
       try {
