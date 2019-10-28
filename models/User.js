@@ -7,22 +7,8 @@ const userSchema = new Schema({
   createdAt: String,
   posts: [
     {
-      body: String,
-      username: String,
-      createdAt: String,
-      comments: [
-        {
-          body: String,
-          username: String,
-          createdAt: String
-        }
-      ],
-      likes: [
-        {
-          username: String,
-          createdAt: String
-        }
-      ]
+      type: Schema.Types.ObjectId,
+      ref: "Post"
     }
   ]
 });

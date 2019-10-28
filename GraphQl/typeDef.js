@@ -8,6 +8,7 @@ module.exports = gql`
     username: String!
     comments: [Comment]!
     likes: [Like]!
+    user: User!
   }
   type Comment {
     id: ID!

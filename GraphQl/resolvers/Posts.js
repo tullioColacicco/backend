@@ -9,7 +9,9 @@ module.exports = {
   Query: {
     async getUsers() {
       try {
-        const user = await User.find().sort({ createdAt: -1 });
+        const user = await User.find()
+          .sort({ createdAt: -1 })
+          .populate("posts");
         return user;
       } catch (err) {
         throw new Error(err);
@@ -17,7 +19,10 @@ module.exports = {
     },
     async getPosts() {
       try {
-        const posts = await Post.find().sort({ createdAt: -1 });
+        const posts = await Post.find()
+          .populate("user")
+          .sort({ createdAt: -1 });
+
         return posts;
       } catch (err) {
         throw new Error(err);
@@ -25,7 +30,8 @@ module.exports = {
     },
     async getPost(_, { postId }) {
       try {
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate("user");
+
         if (post) {
           return post;
         } else {
@@ -39,15 +45,16 @@ module.exports = {
   Mutation: {
     async createPost(_, { body }, context) {
       const user = checkAuth(context);
-
+      console.log(user.id);
       const newPost = new Post({
         body,
         user: user.id,
         username: user.username,
         createdAt: new Date().toISOString()
       });
-
+      newPost.populate("User");
       const post = await newPost.save();
+
       try {
         const currentUser = await User.findById(user.id);
         console.log(newPost);
