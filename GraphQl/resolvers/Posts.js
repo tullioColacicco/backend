@@ -45,7 +45,10 @@ module.exports = {
   Mutation: {
     async createPost(_, { body }, context) {
       const user = checkAuth(context);
-      console.log(user.id);
+      // console.log(user.id);
+      if (body.trim() === "") {
+        throw new Error("Post body must not be empty");
+      }
       const newPost = new Post({
         body,
         user: user.id,
@@ -57,7 +60,6 @@ module.exports = {
 
       try {
         const currentUser = await User.findById(user.id);
-        console.log(newPost);
         if (currentUser) {
           await currentUser.posts.push(post);
           await currentUser.save();
@@ -69,6 +71,11 @@ module.exports = {
     },
     async deletePost(_, { postId }, context) {
       const user = checkAuth(context);
+      const currentUser = await User.findById(user.id);
+      if (currentUser) {
+        await currentUser.posts.pull(postId);
+        await currentUser.save();
+      }
       try {
         const post = await Post.findById(postId);
         if (user.username === post.username) {
