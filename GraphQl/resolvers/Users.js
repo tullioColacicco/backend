@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { UserInputError } = require("apollo-server");
+const checkAuth = require("../../util/CheckAuth");
 
 const {
   validateRegisterInput,
@@ -24,6 +25,7 @@ function generateToken(user) {
 module.exports = {
   Mutation: {
     async login(_, { username, password }) {
+      console.log("logged");
       const { errors, valid } = validateLoginInput(username, password);
       if (!valid) {
         throw new UserInputError("Errors", { errors });
@@ -87,6 +89,26 @@ module.exports = {
         id: res.id,
         token
       };
+    },
+    async addFriend(_, { friendId }, context) {
+      const user = checkAuth(context);
+      // console.log("ex");
+      // console.log(body);
+      console.log(friendId);
+      const me = await User.findById(user.id);
+      const friend = await User.findById(friendId);
+      console.log(friend);
+      try {
+        if (me && friend) {
+          await me.friends.push(friendId);
+          await friend.friends.push(user.id);
+          await friend.save();
+          await me.save();
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
+      return me.populate("friends");
     }
   }
 };
