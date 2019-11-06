@@ -94,10 +94,10 @@ module.exports = {
       const user = checkAuth(context);
       // console.log("ex");
       // console.log(body);
-      console.log(friendId);
+
       const me = await User.findById(user.id);
       const friend = await User.findById(friendId);
-      console.log(friend);
+
       try {
         if (me && friend) {
           await me.friends.push(friendId);
@@ -108,7 +108,7 @@ module.exports = {
       } catch (error) {
         throw new Error(error);
       }
-      return me.populate("friends");
+      return me;
     }
   }
 };
