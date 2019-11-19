@@ -29,3 +29,5 @@ export default (
     <App />
   </ApolloProvider>
 );
+
+// {dataIdFromObject: object => object.id}

@@ -12,14 +12,6 @@ module.exports = gql`
     commentCount: Int!
     user: User!
   }
-  type Chat {
-    id: ID!
-    body: String!
-    createdAt: String!
-    username: String!
-
-    users: [User]!
-  }
   type Comment {
     id: ID!
     createdAt: String!
@@ -39,6 +31,7 @@ module.exports = gql`
     createdAt: String!
     posts: [Post]!
     friends: [User]!
+    chats: [Chat!]!
   }
   input RegisterInput {
     username: String!
@@ -47,32 +40,47 @@ module.exports = gql`
     email: String!
   }
   type Query {
+    getChats: [Chat]!
+    getMessages: [Message]!
     getMe: User!
     getUsers: [User]
     getPosts: [Post]
-    getChat: [Chat]
     getPost(postId: ID!): Post
   }
-  # type Chat {
-  #   id: ID!
-  #   title: String!
-  #   users: [User!]!
-  #   messages: [Message!]!
-  #   lastMessage: Message
-  #   createdAt: String!
-  #   updatedAt: String!
-  # }
+  type Chat {
+    id: ID!
+    title: String!
+    users: [User!]!
+    messages: [Message!]!
+    lastMessage: Message
+    createdAt: String!
+    updatedAt: String!
+  }
+  type Message {
+    id: ID!
+    body: String!
+    sender: User!
+    chat: Chat!
+
+    createdAt: String!
+    updatedAt: String!
+  }
 
   type Mutation {
-    # startChat(title: String, userIds: [ID!]!): Chat
+    createMessage(chatId: ID!, body: String!): Message!
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
     createPost(body: String!): Post
-    createChat(body: String!): Chat!
+    createChat(friendId: ID!): Chat!
     deletePost(postId: ID!): String!
     createComment(postId: String!, body: String!): Post!
     deleteComment(postId: ID!, commentId: ID!): Post!
     likePost(postId: ID!): Post!
     addFriend(friendId: ID!): User!
+  }
+  type Subscription {
+    newChatMessage(chatId: ID!): Message!
+    newPost: Post!
+    # newChat: Chat!
   }
 `;

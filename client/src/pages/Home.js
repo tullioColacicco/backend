@@ -10,6 +10,7 @@ import { AuthContext } from "../context/auth";
 
 export default function Home() {
   const { user } = useContext(AuthContext);
+  console.log(user);
   const { loading, data } = useQuery(FETCH_POSTS_QUERY);
   let posts = "";
   if (data) {

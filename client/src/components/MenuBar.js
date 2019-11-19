@@ -9,11 +9,25 @@ export default function MenuBar() {
   const pathname = window.location.pathname;
   const path = pathname === "/" ? "home" : pathname.substr(1);
   const [activeItem, setActiveItem] = useState(path);
+
   const handleItemClick = (e, { name }) => setActiveItem(name);
   const menuBar = user ? (
     <div>
       <Menu pointing secondary size="massive" color="blue">
-        <Menu.Item name={user.username} active as={Link} to={"/"} />
+        <Menu.Item
+          name={user.username}
+          active={activeItem === user.username}
+          onClick={handleItemClick}
+          as={Link}
+          to={"/"}
+        />
+        <Menu.Item
+          name={"My Profile"}
+          active={activeItem === "My Profile"}
+          onClick={handleItemClick}
+          as={Link}
+          to={`/MyProfile/${user.id}`}
+        />
         <Menu.Menu position="right">
           <Menu.Item name="logout" active onClick={logout} />
         </Menu.Menu>

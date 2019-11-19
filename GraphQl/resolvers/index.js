@@ -1,6 +1,7 @@
 const postResolvers = require("./Posts");
 const userResolvers = require("./Users");
 const commentResolvers = require("./Comments");
+const chatResolvers = require("./Chat");
 
 module.exports = {
   Post: {
@@ -13,6 +14,10 @@ module.exports = {
   Mutation: {
     ...userResolvers.Mutation,
     ...postResolvers.Mutation,
-    ...commentResolvers.Mutation
+    ...commentResolvers.Mutation,
+    ...chatResolvers.Mutation
+  },
+  Subscription: {
+    ...chatResolvers.Subscription
   }
 };

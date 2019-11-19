@@ -1,8 +1,13 @@
-const { AuthenticationError, UserInputError } = require("apollo-server");
+const {
+  AuthenticationError,
+  UserInputError,
+  withFilter
+} = require("apollo-server");
 
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Chat = require("../../models/Chat");
+const Message = require("../../models/Message");
 
 const checkAuth = require("../../util/CheckAuth");
 
@@ -12,10 +17,50 @@ module.exports = {
       try {
         const user = await User.find()
           .sort({ createdAt: -1 })
-          .populate(["posts", "friends"]);
+          // .populate(["posts", "friends", "chats"], populate: {path: 'users'});
+          .populate([
+            { path: "posts", populate: { path: "user" } },
+            { path: "friends", populate: { path: "posts" } },
+
+            {
+              path: "chats",
+              populate: [
+                { path: "users" },
+                {
+                  path: "messages",
+                  populate: { path: "sender" }
+                }
+              ]
+            }
+          ]);
         return user;
       } catch (err) {
         throw new Error(err);
+      }
+    },
+    async getChats() {
+      try {
+        const chat = await Chat.find().populate("users");
+        return chat;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    async getMessages() {
+      try {
+        const message = await Message.find().populate([
+          {
+            path: "chat",
+            model: "Chat",
+            populate: {
+              path: "messages"
+            }
+          },
+          { path: "sender" }
+        ]);
+        return message;
+      } catch (error) {
+        throw new Error(error);
       }
     },
     async getPosts() {
@@ -30,21 +75,9 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async getChat() {
-      console.log("hello");
-      try {
-        const chat = await Chat.find()
-          .populate("users")
-          .sort({ createdAt: -1 });
-
-        return chat;
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
     async getMe(_, __, context) {
       const user = checkAuth(context);
-      const me = await User.findById(user.id);
+      const me = await User.findById(user.id).populate("posts");
       return me;
     },
     async getPost(_, { postId }) {
@@ -76,6 +109,9 @@ module.exports = {
       });
 
       const post = await newPost.save();
+      context.pubsub.publish("NEW_POST", {
+        newPost: post
+      });
 
       try {
         const currentUser = await User.findById(user.id);
@@ -86,34 +122,6 @@ module.exports = {
       } catch (error) {
         throw new Error(error);
       }
-      return post;
-    },
-    async createChat(_, { body }, context) {
-      const user = checkAuth(context);
-      // console.log(user.id);
-      if (body.trim() === "") {
-        throw new Error("Post body must not be empty");
-      }
-      const newChat = new Chat({
-        body,
-
-        username: user.username,
-        createdAt: new Date().toISOString()
-      });
-
-      const post = await newChat.save();
-      await post.users.push(user.id);
-      await post.save();
-
-      // try {
-      //   const currentUser = await User.findById(user.id);
-      //   if (currentUser) {
-      //     await currentUser.posts.push(post);
-      //     await currentUser.save();
-      //   }
-      // } catch (error) {
-      //   throw new Error(error);
-      // }
       return post;
     },
     async deletePost(_, { postId }, context) {
@@ -153,4 +161,12 @@ module.exports = {
       } else throw new UserInputError("Post not found");
     }
   }
+  // Subscription: {
+  //   newChatMessage: {
+  //     susbscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_MESSAGE")
+  //   },
+  //   newPost: {
+  //     subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_POST")
+  //   }
+  // }
 };

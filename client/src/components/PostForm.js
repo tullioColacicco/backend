@@ -3,6 +3,7 @@ import { Form, Button } from "semantic-ui-react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { FETCH_POSTS_QUERY } from "../query/graphql";
+import { FETCH_USER_POSTS } from "../query/fetchcurrentuserposts";
 
 export default function PostForm() {
   const [errors, setErrors] = useState({});
@@ -20,14 +21,57 @@ export default function PostForm() {
       const data = proxy.readQuery({
         query: FETCH_POSTS_QUERY
       });
-
+      console.log(data);
       const new_post = result.data.createPost;
+      console.log(new_post.id);
       proxy.writeQuery({
         query: FETCH_POSTS_QUERY,
         data: { getPosts: [new_post, ...data.getPosts] }
       });
+      try {
+        const userData = proxy.readQuery({
+          query: FETCH_USER_POSTS
+        });
+        const myData = userData.getMe;
+
+        const new_post = result.data.createPost;
+        console.log(new_post);
+        const structure = {
+          getMe: {
+            username: myData.username,
+            id: myData.id,
+            posts: [...myData.posts, new_post],
+            __typename: myData.__typename
+          }
+        };
+        console.log(structure);
+        proxy.writeQuery({
+          query: FETCH_USER_POSTS,
+          data: structure
+        });
+      } catch (error) {
+        throw new Error(console.log(`help me ${error}`));
+      }
+      // console.log(userData.posts);
+      // console.log(userData.getMe);
+
       values.body = "";
     },
+    // update(proxy, result) {
+    //   const userData = proxy.readQuery({
+    //     query: FETCH_USER_POSTS
+    //   });
+    //   // console.log(userData.getMe.posts);
+    //   // console.log(userData);
+
+    //   const new_post = result.createPost;
+    //   proxy.writeQuery({
+    //     query: FETCH_USER_POSTS,
+    //     userData: { posts: [new_post, ...userData.posts] }
+    //   });
+    //   values.body = "";
+    // },
+
     onError(err) {
       setErrors(err.graphQLErrors[0]);
     }
