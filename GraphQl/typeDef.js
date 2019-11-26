@@ -46,6 +46,7 @@ module.exports = gql`
     getUsers: [User]
     getPosts: [Post]
     getPost(postId: ID!): Post
+    getUser(userId: ID!): User!
   }
   type Chat {
     id: ID!

@@ -19,6 +19,18 @@ export default function PostCard({
   likes
 }) {
   const { user } = useContext(AuthContext);
+  // console.log(post.user.id);
+  console.log(post);
+  const isMe = user.username === username ? true : false;
+  let profile = "";
+  let userId = "";
+  // const postUserId = post.user.id ? post.user.id : false;
+  // if (!postUserId) {
+  //   userId = user.id;
+  // } else userId = post.user.id;
+  // if (post.user.id === user.id) {
+  //   profile = "myProfile";
+  // } else profile = "profile";
 
   return (
     <Card fluid>
@@ -28,7 +40,15 @@ export default function PostCard({
           size="mini"
           src="https://react.semantic-ui.com/images/avatar/large/molly.png"
         />
-        <Card.Header>{username}</Card.Header>
+        {isMe ? (
+          <Card.Header as={Link} to={`/myProfile/${user.id}`}>
+            {username}
+          </Card.Header>
+        ) : (
+          <Card.Header as={Link} to={`/profile/${post.user.id}`}>
+            {username}
+          </Card.Header>
+        )}
         <Card.Meta as={Link} to={`/posts/${id}`}>
           {moment(createdAt).fromNow(true)}
         </Card.Meta>

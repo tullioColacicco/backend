@@ -15,6 +15,7 @@ export default function Home() {
   let posts = "";
   if (data) {
     posts = data.getPosts;
+    console.log(posts.body);
   }
 
   return (

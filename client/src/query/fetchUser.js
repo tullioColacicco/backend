@@ -1,29 +1,34 @@
 import gql from "graphql-tag";
 
-export const FETCH_USER_POSTS = gql`
-  {
-    getMe {
+export const FETCH_USER = gql`
+  query getUser($userId: ID!) {
+    getUser(userId: $userId) {
       username
-      id
       friends {
         id
         username
       }
       posts {
         id
-        body
         createdAt
         username
-        likeCount
-        likes {
-          username
-        }
+        body
+
         commentCount
         comments {
           id
-          username
           createdAt
+          username
           body
+        }
+        likeCount
+        likes {
+          id
+          createdAt
+          username
+        }
+        user {
+          id
         }
       }
     }

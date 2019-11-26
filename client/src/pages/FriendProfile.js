@@ -15,27 +15,25 @@ import {
   //   Form
 } from "semantic-ui-react";
 
-import { FETCH_USER_POSTS } from "../query/fetchcurrentuserposts";
+import { FETCH_USER } from "../query/fetchUser";
 
 import { AuthContext } from "../context/auth";
 import PostCard from "../components/PostCard";
-import PostForm from "../components/PostForm";
-// import LikeButton from "../components/LikeButton";
-// import DeleteButton from "../components/DeleteButton";
-// import MyPopup from "../util/MyPopup";
 
-export default function UserProfile(props) {
+export default function FriendProfile(props) {
+  const userId = props.match.params.friendId;
+
   const { user } = useContext(AuthContext);
-  const { loading, data } = useQuery(FETCH_USER_POSTS);
+  const { loading, data } = useQuery(FETCH_USER, {
+    variables: { userId }
+  });
   let posts = "";
   if (data) {
-    posts = data.getMe.posts;
-    // console.log(data.getMe.friends);
+    posts = data.getUser.posts;
   }
 
-  const userId = props.match.params.userId;
-  const username = data ? data.getMe.username : "loading";
-  const friendCount = data ? data.getMe.friends.length : "loading";
+  const username = data ? data.getUser.username : "loading";
+  const friendCount = data ? data.getUser.friends.length : "loading";
   //   console.log(props.match.params);
 
   return (
@@ -71,11 +69,6 @@ export default function UserProfile(props) {
       {/* POSTS */}
       <Grid columns={4} divided>
         <Grid.Row>
-          {user && (
-            <GridColumn>
-              <PostForm />
-            </GridColumn>
-          )}
           {loading ? (
             <h1>loading posts...</h1>
           ) : (

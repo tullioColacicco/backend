@@ -77,8 +77,19 @@ module.exports = {
     },
     async getMe(_, __, context) {
       const user = checkAuth(context);
-      const me = await User.findById(user.id).populate("posts");
+      const me = await User.findById(user.id).populate([
+        { path: "posts", populate: { path: "user" } },
+        { path: "friends", populate: { path: "posts" } }
+      ]);
       return me;
+    },
+    async getUser(_, { userId }, context) {
+      const user = checkAuth(context);
+      const person = await User.findById(userId).populate([
+        { path: "posts", populate: { path: "user" } },
+        { path: "friends", populate: { path: "posts" } }
+      ]);
+      return person;
     },
     async getPost(_, { postId }) {
       try {
@@ -97,13 +108,14 @@ module.exports = {
   Mutation: {
     async createPost(_, { body }, context) {
       const user = checkAuth(context);
+      const me = await User.findById(user.id);
       // console.log(user.id);
       if (body.trim() === "") {
         throw new Error("Post body must not be empty");
       }
       const newPost = new Post({
         body,
-        user: user.id,
+        user: me,
         username: user.username,
         createdAt: new Date().toISOString()
       });

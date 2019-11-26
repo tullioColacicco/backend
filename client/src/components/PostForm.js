@@ -18,6 +18,7 @@ export default function PostForm() {
   const [createPost, { loading }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     update(proxy, result) {
+      // FIX CACHE LOADING ISSUE
       const data = proxy.readQuery({
         query: FETCH_POSTS_QUERY
       });
@@ -35,10 +36,11 @@ export default function PostForm() {
         const myData = userData.getMe;
 
         const new_post = result.data.createPost;
-        console.log(new_post);
+        console.log(myData.id);
         const structure = {
           getMe: {
             username: myData.username,
+            friends: [...myData.friends],
             id: myData.id,
             posts: [...myData.posts, new_post],
             __typename: myData.__typename
@@ -50,7 +52,7 @@ export default function PostForm() {
           data: structure
         });
       } catch (error) {
-        throw new Error(console.log(`help me ${error}`));
+        throw new Error(console.log(`error: ${error}`));
       }
       // console.log(userData.posts);
       // console.log(userData.getMe);
@@ -120,6 +122,9 @@ const CREATE_POST_MUTATION = gql`
         createdAt
       }
       commentCount
+      user {
+        id
+      }
     }
   }
 `;

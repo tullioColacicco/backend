@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { Button, Icon, Confirm } from "semantic-ui-react";
 import { FETCH_POSTS_QUERY } from "../query/graphql";
+import { FETCH_USER_POSTS } from "../query/fetchcurrentuserposts";
 
 import MyPopup from "../util/MyPopup";
 
@@ -14,14 +15,40 @@ export default function DeleteButton({ postId, commentId, callback }) {
     update(proxy) {
       setConfirmOpen(false);
       if (!commentId) {
-        const data = proxy.readQuery({
-          query: FETCH_POSTS_QUERY
-        });
-        const posts = data.getPosts.filter(p => p.id !== postId);
-        proxy.writeQuery({
-          query: FETCH_POSTS_QUERY,
-          data: { getPosts: posts }
-        });
+        try {
+          const userData = proxy.readQuery({
+            query: FETCH_USER_POSTS
+          });
+          const myData = userData.getMe;
+
+          const myPosts = myData.posts.filter(p => p.id !== postId);
+          // console.log(new_post);
+          const structure = {
+            getMe: {
+              username: myData.username,
+              friends: [...myData.friends],
+              id: myData.id,
+              posts: [...myPosts],
+              __typename: myData.__typename
+            }
+          };
+          // console.log(structure);
+          proxy.writeQuery({
+            query: FETCH_USER_POSTS,
+            data: structure
+          });
+
+          const data = proxy.readQuery({
+            query: FETCH_POSTS_QUERY
+          });
+          const posts = data.getPosts.filter(p => p.id !== postId);
+          proxy.writeQuery({
+            query: FETCH_POSTS_QUERY,
+            data: { getPosts: posts }
+          });
+        } catch (error) {
+          throw new Error(console.log(`error: ${error}`));
+        }
       }
       if (callback) callback();
     },
