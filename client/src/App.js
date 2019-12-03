@@ -15,7 +15,9 @@ import MenuBar from "./components/MenuBar";
 import SinglePost from "./pages/SinglePost";
 import UserProfile from "./pages/UserProfile";
 import Friends from "./pages/Friends";
+import Messages from "./pages/Messages";
 import FriendProfile from "./pages/FriendProfile";
+import Chat from "./pages/Chat";
 
 import HamBurgerMenu from "./components/HamburgerMenu";
 
@@ -34,7 +36,9 @@ function App() {
             <Route exact path="/MyProfile/:userId" component={UserProfile} />
             <Route exact path="/posts/:postId" component={SinglePost} />
             <Route exact path="/friends" component={Friends} />
+            <Route exact path="/messages" component={Messages} />
             <Route exact path="/friends/:friendId" component={FriendProfile} />
+            <Route exact path="/messages/:chatId" component={Chat} />
           </Container>
         </Container>
       </Router>

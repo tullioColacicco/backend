@@ -27,6 +27,7 @@ export default function FriendProfile(props) {
   const { loading, data } = useQuery(FETCH_USER, {
     variables: { userId }
   });
+  console.log(userId);
   let posts = "";
   if (data) {
     posts = data.getUser.posts;

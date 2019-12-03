@@ -40,7 +40,10 @@ module.exports = {
     },
     async getChats() {
       try {
-        const chat = await Chat.find().populate("users");
+        const chat = await Chat.find().populate([
+          { path: "users" },
+          { path: "messages" }
+        ]);
         return chat;
       } catch (error) {
         throw new Error(error);
@@ -79,7 +82,17 @@ module.exports = {
       const user = checkAuth(context);
       const me = await User.findById(user.id).populate([
         { path: "posts", populate: { path: "user" } },
-        { path: "friends", populate: { path: "posts" } }
+        { path: "friends", populate: { path: "posts" } },
+        {
+          path: "chats",
+          populate: [
+            { path: "users" },
+            {
+              path: "messages",
+              populate: { path: "sender" }
+            }
+          ]
+        }
       ]);
       return me;
     },
@@ -90,6 +103,17 @@ module.exports = {
         { path: "friends", populate: { path: "posts" } }
       ]);
       return person;
+    },
+    async getChat(_, { chatId }, context) {
+      const user = checkAuth(context);
+      const chat = await Chat.findById(chatId).populate([
+        { path: "users" },
+        {
+          path: "messages",
+          populate: { path: "sender" }
+        }
+      ]);
+      return chat;
     },
     async getPost(_, { postId }) {
       try {

@@ -21,7 +21,10 @@ export default function PostCard({
   const { user } = useContext(AuthContext);
   // console.log(post.user.id);
   console.log(post);
-  const isMe = user.username === username ? true : false;
+  let isMe = "";
+  if (user) {
+    isMe = user.username === username ? true : false;
+  }
   let profile = "";
   let userId = "";
   // const postUserId = post.user.id ? post.user.id : false;
