@@ -104,15 +104,23 @@ module.exports = {
       ]);
       return person;
     },
-    async getChat(_, { chatId }, context) {
+    async getChat(_, { chatId, pageNumber }, context) {
+      let page = -5;
+      if (pageNumber) page = -1 * pageNumber + -5;
+
       const user = checkAuth(context);
-      const chat = await Chat.findById(chatId).populate([
+      const chat = await Chat.findById(chatId, {
+        messages: { $slice: [page, 5] }
+      }).populate([
         { path: "users" },
         {
           path: "messages",
+          options: { sort: { createdAt: -1 } },
+          // options: { sort: { createdAt: -1 } },
           populate: { path: "sender" }
         }
       ]);
+
       return chat;
     },
     async getPost(_, { postId }) {

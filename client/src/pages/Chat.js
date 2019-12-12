@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 // import gql from "graphql-tag";
 import { useQuery, useMutation, useSubscription } from "@apollo/react-hooks";
 // import { Link } from "react-router-dom";
@@ -18,15 +18,24 @@ import { LISTEN_FOR_MESSAGE } from "../query/liveChatSubscription";
 
 import { AuthContext } from "../context/auth";
 import ChatRoom from "../components/ChatRoom";
+import { relative } from "path";
 
 export default function Chat(props) {
   const [values, setValues] = useState({
     body: ""
   });
+  const [page, setPage] = useState(1);
+  const [loadMore, setLoadMore] = useState(true);
+
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   const { user } = useContext(AuthContext);
   const chatId = props.match.params.chatId;
-  const { loading, data, subscribeToMore } = useQuery(FETCH_CHAT, {
+  const { loading, data, fetchMore } = useQuery(FETCH_CHAT, {
     variables: { chatId }
   });
   const [createMessage] = useMutation(CREATE_MESSAGE, {
@@ -50,47 +59,61 @@ export default function Chat(props) {
             id: myData.id,
             title: myData.title,
             messages: [
-              ...myData.messages,
-              subscriptionData.data.newChatMessage
+              subscriptionData.data.newChatMessage,
+              ...myData.messages
             ],
 
             users: [...myData.users],
             __typename: myData.__typename
           }
         };
-        // console.log(chat);
-        // console.log(structure);
-        // console.log(myData.__typename);
-        // console.log(subscriptionData.data);
+
         client.writeQuery({
           query: FETCH_CHAT,
           variables: { chatId },
           data: structure
         });
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        console.log(messages.length);
       } catch (error) {
         throw new Error(console.log(`error: ${error}`));
       }
     }
   });
+  let pageNumber = null;
+  function handleClick() {
+    setPage(page + 1);
+    pageNumber = messages.length;
+    fetchMore({
+      variables: { chatId, pageNumber },
+      updateQuery: (previousResult, { fetchMoreResult }) => {
+        // console.log(previousResult.getChat.messages);
+        console.log(fetchMoreResult.getChat.messages);
+        if (!fetchMoreResult) {
+          return previousResult;
+        }
+        if (fetchMoreResult.getChat.messages.length < 5) {
+          setLoadMore(false);
+        }
+        return {
+          getChat: {
+            id: previousResult.getChat.id,
+            title: previousResult.getChat.title,
+            messages: [
+              ...previousResult.getChat.messages,
+              ...fetchMoreResult.getChat.messages
+            ],
 
-  // const subscribe = () =>
-  //   subscribeToMore({
-  //     document: LISTEN_FOR_MESSAGE,
-  //     variables: { chatId },
-  //     updateQuery: (prev, { data: message }) => {
-  //       console.log(prev);
-  //       if (!data) return prev;
+            users: [...previousResult.getChat.users],
+            __typename: previousResult.getChat.__typename
+          }
+        };
+      }
+    });
+    console.log(messages.length);
+  }
 
-  //       return { message: [...prev.message, message] };
-  //     }
-  //   });
-
-  // console.log(subcriptionMessages);
-  // if (message) {
-  //   // subscribe();
-  //   console.log(message);
-  //   // setSubscriptionMessage({ ...subcriptionMessages, subcriptionMessage });
-  // }
   function onSubmit(event) {
     event.preventDefault();
 
@@ -104,18 +127,91 @@ export default function Chat(props) {
     messages = chat.messages;
     // console.log(chat.messages);
   }
+
+  // function scrollToTop() {
+  //   messageTop.current.scrollIntoView(true);
+  // }
+
+  useEffect(scrollToBottom, [messages]);
+
   function onChange(event) {
     setValues({ ...values, [event.target.name]: event.target.value });
+  }
+  function handleScroll() {
+    if (messagesEndRef && messagesEndRef.current.scrollTop === 0) {
+      setPage(page + 1);
+      pageNumber = messages.length;
+      fetchMore({
+        variables: { chatId, pageNumber },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          // console.log(previousResult.getChat.messages);
+          console.log(fetchMoreResult.getChat.messages);
+          if (!fetchMoreResult) {
+            return previousResult;
+          }
+          if (fetchMoreResult.getChat.messages.length < 5) {
+            setLoadMore(false);
+          }
+          return {
+            getChat: {
+              id: previousResult.getChat.id,
+              title: previousResult.getChat.title,
+              messages: [
+                ...previousResult.getChat.messages,
+                ...fetchMoreResult.getChat.messages
+              ],
+
+              users: [...previousResult.getChat.users],
+              __typename: previousResult.getChat.__typename
+            }
+          };
+        }
+      });
+
+      console.log(messagesEndRef.current.scrollTop);
+      console.log(messagesEndRef.current.scrollHeight);
+    }
   }
 
   return (
     <div>
       <Container>
         <Header textAlign="center">{chat.title}</Header>
-        {data &&
-          messages.map(message => {
-            return <ChatRoom key={message.id} message={message} {...message} />;
-          })}
+        <Button
+          primary={loadMore}
+          onClick={handleClick}
+          style={{ marginBottom: 20 }}
+        >
+          Load More {pageNumber}
+        </Button>
+
+        <div
+          ref={messagesEndRef}
+          onScroll={handleScroll}
+          style={{
+            overflow: "auto",
+            height: 500,
+            display: "flex",
+            flexDirection: "column-reverse"
+          }}
+        >
+          <Container
+            style={{
+              // overflow: "auto",
+              // height: 500,
+              display: "flex",
+              flexDirection: "column-reverse"
+            }}
+            // ref={messageTop}
+          >
+            {data &&
+              messages.map(message => {
+                return (
+                  <ChatRoom key={message.id} message={message} {...message} />
+                );
+              })}
+          </Container>
+        </div>
         {/* {message && <ChatRoom message={message} {...message} />} */}
         <Form reply onSubmit={onSubmit}>
           <Form.TextArea

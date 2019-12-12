@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const FETCH_CHAT = gql`
-  query getChat($chatId: ID!) {
-    getChat(chatId: $chatId) {
+  query getChat($chatId: ID!, $pageNumber: Int) {
+    getChat(chatId: $chatId, pageNumber: $pageNumber) {
       id
       title
       users {
