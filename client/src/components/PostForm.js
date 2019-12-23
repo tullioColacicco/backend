@@ -17,48 +17,49 @@ export default function PostForm() {
 
   const [createPost, { loading }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
-    update(proxy, result) {
-      // FIX CACHE LOADING ISSUE
-      const data = proxy.readQuery({
-        query: FETCH_POSTS_QUERY
-      });
-      console.log(data);
-      const new_post = result.data.createPost;
-      console.log(new_post.id);
-      proxy.writeQuery({
-        query: FETCH_POSTS_QUERY,
-        data: { getPosts: [new_post, ...data.getPosts] }
-      });
-      try {
-        const userData = proxy.readQuery({
-          query: FETCH_USER_POSTS
-        });
-        const myData = userData.getMe;
+    refetchQueries: [{ query: FETCH_USER_POSTS }, { query: FETCH_POSTS_QUERY }],
+    // update(proxy, result) {
+    //   // FIX CACHE LOADING ISSUE
+    //   const data = proxy.readQuery({
+    //     query: FETCH_POSTS_QUERY
+    //   });
+    //   console.log(data);
+    //   const new_post = result.data.createPost;
+    //   console.log(new_post.id);
+    //   proxy.writeQuery({
+    //     query: FETCH_POSTS_QUERY,
+    //     data: { getPosts: [new_post, ...data.getPosts] }
+    //   });
+    //   try {
+    //     const userData = proxy.readQuery({
+    //       query: FETCH_USER_POSTS
+    //     });
+    //     const myData = userData.getMe;
 
-        const new_post = result.data.createPost;
-        console.log(myData.id);
-        const structure = {
-          getMe: {
-            username: myData.username,
-            friends: [...myData.friends],
-            id: myData.id,
-            posts: [...myData.posts, new_post],
-            __typename: myData.__typename
-          }
-        };
-        console.log(structure);
-        proxy.writeQuery({
-          query: FETCH_USER_POSTS,
-          data: structure
-        });
-      } catch (error) {
-        throw new Error(console.log(`error: ${error}`));
-      }
-      // console.log(userData.posts);
-      // console.log(userData.getMe);
+    //     const new_post = result.data.createPost;
+    //     console.log(myData.id);
+    //     const structure = {
+    //       getMe: {
+    //         username: myData.username,
+    //         friends: [...myData.friends],
+    //         id: myData.id,
+    //         posts: [...myData.posts, new_post],
+    //         __typename: myData.__typename
+    //       }
+    //     };
+    //     console.log(structure);
+    //     proxy.writeQuery({
+    //       query: FETCH_USER_POSTS,
+    //       data: structure
+    //     });
+    //   } catch (error) {
+    //     throw new Error(console.log(`error: ${error}`));
+    //   }
+    //   // console.log(userData.posts);
+    //   // console.log(userData.getMe);
 
-      values.body = "";
-    },
+    //   values.body = "";
+    // },
     // update(proxy, result) {
     //   const userData = proxy.readQuery({
     //     query: FETCH_USER_POSTS

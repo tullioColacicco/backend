@@ -49,9 +49,7 @@ module.exports = {
     },
     async register(
       _,
-      {
-        registerInput: { username, email, password, confirmPassword }
-      },
+      { registerInput: { username, email, password, confirmPassword } },
       context,
       info
     ) {
@@ -78,7 +76,14 @@ module.exports = {
         email,
         username,
         password,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        profileDescription: {
+          favoriteMovies: null,
+          favoriteGames: null,
+          body: null
+        },
+        profilePicture:
+          "https://i.pinimg.com/originals/b4/25/71/b42571ea8fd0160785dd55d107439570.jpg"
       });
 
       const res = await newUser.save();

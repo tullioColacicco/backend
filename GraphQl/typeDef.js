@@ -18,10 +18,24 @@ module.exports = gql`
     username: String!
     body: String!
   }
+
+  type ProfileDescription {
+    favoriteMovies: String
+    favoriteGames: String
+    body: String
+  }
   type Like {
     id: ID!
     createdAt: String!
     username: String!
+  }
+  # type Photo {
+  #   id: ID!
+  #   url: String!
+  # }
+  type Photo {
+    id: ID!
+    url: String!
   }
   type User {
     id: ID!
@@ -29,6 +43,9 @@ module.exports = gql`
     token: String!
     username: String!
     createdAt: String!
+    profileDescription: ProfileDescription
+    profilePicture: String
+    photos: [Photo]!
     posts: [Post]!
     friends: [User]!
     chats: [Chat!]!
@@ -38,6 +55,11 @@ module.exports = gql`
     password: String!
     confirmPassword: String!
     email: String!
+  }
+  input ProfileDescriptionInput {
+    favoriteMovies: String!
+    favoriteGames: String!
+    body: String!
   }
   type Query {
     getChats: [Chat]!
@@ -79,6 +101,11 @@ module.exports = gql`
     deleteComment(postId: ID!, commentId: ID!): Post!
     likePost(postId: ID!): Post!
     addFriend(friendId: ID!): User!
+    uploadFile(file: Upload!): User!
+    setProfilePicture(url: String!): User!
+    setProfileDescription(
+      profileDescriptionInput: ProfileDescriptionInput!
+    ): User!
   }
   type Subscription {
     newChatMessage(chatId: ID!): Message!

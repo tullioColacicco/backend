@@ -5,6 +5,16 @@ export const FETCH_USER_POSTS = gql`
     getMe {
       username
       id
+      profileDescription {
+        favoriteMovies
+        favoriteGames
+        body
+      }
+      profilePicture
+      photos {
+        url
+        id
+      }
       friends {
         id
         username

@@ -5,6 +5,17 @@ const userSchema = new Schema({
   password: String,
   email: String,
   createdAt: String,
+  profilePicture: String,
+  profileDescription: {
+    favoriteMovies: { type: String },
+    favoriteGames: { type: String },
+    body: { type: String }
+  },
+  photos: [
+    {
+      url: String
+    }
+  ],
   posts: [
     {
       type: Schema.Types.ObjectId,

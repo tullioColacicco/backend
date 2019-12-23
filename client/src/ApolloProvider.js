@@ -8,8 +8,9 @@ import { setContext } from "apollo-link-context";
 import { split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
+import { createUploadLink } from "apollo-upload-client";
 
-const httpLink = new createHttpLink({
+const httpLink = new createUploadLink({
   uri: "http://localhost:5000/"
 });
 const token = localStorage.getItem("jwtToken");
