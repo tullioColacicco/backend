@@ -12,24 +12,20 @@ export default function Login(props) {
     username: "",
     password: ""
   });
+  // console.log(props);
 
   const onChange = event => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(
-      _,
-      {
-        data: { login: userData }
-      }
-    ) {
+    update(_, { data: { login: userData } }) {
       context.login(userData);
 
       props.history.push("/");
     },
     onError(err) {
-      console.log(err.graphQLErrors);
+      // console.log(err.graphQLErrors);
       setErrors(err.graphQLErrors[0].extensions.exception.errors);
     },
     variables: values

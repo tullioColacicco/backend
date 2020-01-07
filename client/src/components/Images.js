@@ -17,7 +17,7 @@ import { AuthContext } from "../context/auth";
 import { SET_PROFILE_PICTURE } from "../query/setProfilePicture";
 import { FETCH_USER_POSTS } from "../query/fetchcurrentuserposts";
 
-export default function Images({ url }) {
+export default function Images({ url, imageSize }) {
   const { user } = useContext(AuthContext);
   const [setProfilePicture] = useMutation(SET_PROFILE_PICTURE, {
     variables: { url },
@@ -25,7 +25,7 @@ export default function Images({ url }) {
       const data = proxy.readQuery({
         query: FETCH_USER_POSTS
       });
-      console.log(result);
+      // console.log(result);
       const structure = {
         getMe: {
           ...data.getMe,
@@ -34,7 +34,7 @@ export default function Images({ url }) {
       };
 
       try {
-        console.log(structure.getMe);
+        // console.log(structure.getMe);
         proxy.writeQuery({
           query: FETCH_USER_POSTS,
           data: structure
@@ -77,7 +77,7 @@ export default function Images({ url }) {
           // style={{ padding: "auto" }}
           centered
           verticalAlign="top"
-          size="tiny"
+          size={imageSize ? imageSize : "tiny"}
           src={url}
         />
         {!hide && (

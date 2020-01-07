@@ -97,8 +97,7 @@ module.exports = {
     },
     async addFriend(_, { friendId }, context) {
       const user = checkAuth(context);
-      // console.log("ex");
-      // console.log(body);
+      console.log("hit");
 
       const me = await User.findById(user.id);
       const friend = await User.findById(friendId);
@@ -109,11 +108,11 @@ module.exports = {
           await friend.friends.push(user.id);
           await friend.save();
           await me.save();
+          return friend;
         }
       } catch (error) {
-        throw new Error(error);
+        throw new Error(console.log(error));
       }
-      return me;
     }
   }
 };

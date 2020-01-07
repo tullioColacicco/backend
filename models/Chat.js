@@ -8,6 +8,8 @@ const chatschema = new Schema({
       ref: "User"
     }
   ],
+  messagesLength: Number,
+
   messages: [
     {
       type: Schema.Types.ObjectId,

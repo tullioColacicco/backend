@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const FETCH_USER_CHATS = gql`
   {
-    getMe {
+    getMyChats {
       chats {
         id
         title

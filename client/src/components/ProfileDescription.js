@@ -1,16 +1,16 @@
 import React, { useState, useContext } from "react";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import {
-  Card,
+  // Card,
   Button,
   Grid,
-  Image,
-  Icon,
-  Checkbox,
+  // Image,
+  // Icon,
+  // Checkbox,
   // CardContent,
-  Transition,
+  // Transition,
   GridColumn,
-  Label,
+  // Label,
   Form,
   Header
 } from "semantic-ui-react";
@@ -21,22 +21,24 @@ import { SET_PROFILE_DESCRIPTION } from "../query/setprofileDescription";
 export default function ProfileDescription({
   body,
   favoriteMovies,
-  favoriteGames
+  favoriteGames,
+  userId
 }) {
   const { user } = useContext(AuthContext);
+  // console.log(user.id === userId);
   const [values, setValues] = useState({
     favoriteMovies: "",
     favoriteGames: "",
     body: ""
   });
-
+  // console.log(userId);
   const [setProfileDescription] = useMutation(SET_PROFILE_DESCRIPTION, {
     variables: values,
     update(proxy, result) {
       const data = proxy.readQuery({
         query: FETCH_USER_POSTS
       });
-      console.log(result.data.setProfileDescription);
+      // console.log(result.data.setProfileDescription);
       const structure = {
         getMe: {
           ...data.getMe,
@@ -47,7 +49,7 @@ export default function ProfileDescription({
       };
 
       try {
-        console.log(structure.getMe);
+        // console.log(structure.getMe);
         proxy.writeQuery({
           query: FETCH_USER_POSTS,
           data: structure
@@ -73,16 +75,18 @@ export default function ProfileDescription({
 
   return (
     <div>
-      <Header
-        floated="right"
-        as="h6"
-        color="teal"
-        style={{ marginBottom: "10px" }}
-      >
-        <Button basic color="teal" size="mini" onClick={handleHide}>
-          Edit
-        </Button>
-      </Header>
+      {user.id === userId && (
+        <Header
+          floated="right"
+          as="h6"
+          color="teal"
+          style={{ marginBottom: "10px" }}
+        >
+          <Button basic color="teal" size="mini" onClick={handleHide}>
+            Edit
+          </Button>
+        </Header>
+      )}
       <br />
       {hide ? (
         <Grid celled>

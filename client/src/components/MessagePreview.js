@@ -3,22 +3,20 @@ import React, { useContext } from "react";
 // import { useQuery } from "@apollo/react-hooks";
 import { Link } from "react-router-dom";
 import {
-  Card,
+  // Card,
   // Button,
-  Grid,
-  Image,
-  Icon,
+  // Grid,
+  // Image,
+  // Icon,
   //   Label,
   // CardContent,
-  Transition,
-  Container,
-  Comment,
-  Header,
-  GridColumn
+  // Transition,
+  // Container,
+  Comment
+  // Header,
+  // GridColumn
   //   Form
 } from "semantic-ui-react";
-
-import { FETCH_USER_CHATS } from "../query/getMyChats";
 
 import { AuthContext } from "../context/auth";
 

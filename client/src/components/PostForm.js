@@ -18,6 +18,10 @@ export default function PostForm() {
   const [createPost, { loading }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     refetchQueries: [{ query: FETCH_USER_POSTS }, { query: FETCH_POSTS_QUERY }],
+    update() {
+      values.body = "";
+    },
+
     // update(proxy, result) {
     //   // FIX CACHE LOADING ISSUE
     //   const data = proxy.readQuery({
@@ -72,7 +76,7 @@ export default function PostForm() {
     //     query: FETCH_USER_POSTS,
     //     userData: { posts: [new_post, ...userData.posts] }
     //   });
-    //   values.body = "";
+    // values.body = "";
     // },
 
     onError(err) {

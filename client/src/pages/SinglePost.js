@@ -8,7 +8,7 @@ import {
   Image,
   Icon,
   Label,
-  CardContent,
+  // CardContent,
   Form
 } from "semantic-ui-react";
 import moment from "moment";
@@ -19,7 +19,7 @@ import MyPopup from "../util/MyPopup";
 
 export default function SinglePost(props) {
   const postId = props.match.params.postId;
-  console.log(props.match.params);
+  // console.log(props);
   const { user } = useContext(AuthContext);
   const commentInputRef = useRef(null);
   const [comment, setComment] = useState("");

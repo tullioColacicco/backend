@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 // import gql from "graphql-tag";
 // import { useQuery } from "@apollo/react-hooks";
-import { Link } from "react-router-dom";
+
 import {
   // Card,
-  Button,
+  // Button,
   // Grid,
   // Image,
   // Icon,
@@ -19,14 +19,12 @@ import {
 } from "semantic-ui-react";
 
 import moment from "moment";
-import { FETCH_USER_CHATS } from "../query/getMyChats";
 
 import { AuthContext } from "../context/auth";
 
 export default function Messages({
   id,
-  title,
-  users,
+
   sender,
   body,
   createdAt

@@ -4,13 +4,13 @@ import { useQuery } from "@apollo/react-hooks";
 import { Link } from "react-router-dom";
 import {
   Card,
-  Button,
+  // Button,
   Grid,
   Image,
   Icon,
   //   Label,
   // CardContent,
-  Transition,
+  // Transition,
   GridColumn
   //   Form
 } from "semantic-ui-react";
@@ -26,9 +26,9 @@ export default function UserProfile(props) {
   if (data) {
     posts = data.getMe.posts;
   }
-  console.log(data);
-  const userId = props.match.params.userId;
-  const username = data ? data.getMe.username : "loading";
+  // console.log(data);
+  // const userId = props.match.params.userId;
+  // const username = data ? data.getMe.username : "loading";
   const friendCount = data ? data.getMe.friends.length : "loading";
   const friends = data ? data.getMe.friends : "loading";
   //   console.log(props.match.params);
@@ -51,7 +51,7 @@ export default function UserProfile(props) {
                         <Card.Header as={Link} to={`/friends/${friend.id}`}>
                           {friend.username}
 
-                          <Button
+                          {/* <Button
                             as={Link}
                             to={"/"}
                             labelPosition="right"
@@ -59,7 +59,7 @@ export default function UserProfile(props) {
                             // active
                           >
                             <Icon name="at" />
-                          </Button>
+                          </Button> */}
                         </Card.Header>
 
                         <Card.Meta>

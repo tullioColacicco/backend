@@ -81,6 +81,7 @@ module.exports = {
           context.pubsub.publish("NEW_MESSAGE", { newMessage: message });
 
           await chat.messages.push(message);
+          chat.messagesLength = chat.messages.length;
           await chat.save();
 
           return message;

@@ -93,90 +93,27 @@ export default function UserProfile(props) {
   const profilePicture = data ? data.getMe.profilePicture : "loading";
   const profileDescription = data ? data.getMe.profileDescription : "loading";
   const friendCount = data ? data.getMe.friends.length : "loading";
-
+  // const size = 'medium'
   // console.log(props);
 
   return (
     <div>
-      <Grid columns={3} divided>
-        <Grid.Row>
-          <GridColumn>
-            <Card>
-              <Image src={profilePicture} wrapped ui={false} />
-              <Card.Content>
-                <Card.Header>{username}</Card.Header>
-                <Card.Meta>
-                  <span className="date">Joined in 2015</span>
-                </Card.Meta>
-                <Card.Description>
-                  Matthew is a musician living in Nashville.
-                </Card.Description>
-              </Card.Content>
-              <Card.Content extra as={Link} to={"/friends"}>
-                <Icon name="user" />
-                {friendCount}
-              </Card.Content>
-            </Card>
-          </GridColumn>
-          <GridColumn textAlign="center">
-            MAKE DESCRIPTION FOR PROFILE HERE
-            <ProfileDescription
-              profileDescription={profileDescription}
-              {...profileDescription}
-              userId={userId}
-            />
-          </GridColumn>
-
-          <GridColumn textAlign="center">
-            <Header as={Link} to={"/images"}>
-              Images
-            </Header>
-            <Grid celled>
-              <GridColumn>
-                <div style={{ marginBottom: "50px" }}>
-                  <input type="file" onChange={handleFile}></input>
-                  <button onClick={handleSubmit}>Upload</button>
-                </div>
-
-                <Grid columns={4} divided>
-                  <Grid.Row>
-                    {/* {loading ? <div>loading...</div> : null} */}
-                    {data ? (
-                      photos.map((photo, index) => {
-                        return <Images key={index} photo={photo} {...photo} />;
-                      })
-                    ) : (
-                      <GridColumn>loading</GridColumn>
-                    )}
-                  </Grid.Row>
-                </Grid>
-              </GridColumn>
-            </Grid>
-          </GridColumn>
-        </Grid.Row>
-      </Grid>
-
-      {/* POSTS */}
       <Grid columns={4} divided>
         <Grid.Row>
-          {user && (
-            <GridColumn>
-              <PostForm />
-            </GridColumn>
-          )}
-          {loading ? (
-            <h1>loading posts...</h1>
+          {/* {loading ? <div>loading...</div> : null} */}
+          {data ? (
+            photos.map((photo, index) => {
+              return (
+                <Images
+                  key={index}
+                  photo={photo}
+                  imageSize={"medium"}
+                  {...photo}
+                />
+              );
+            })
           ) : (
-            <Transition.Group>
-              {posts &&
-                posts.map(post => {
-                  return (
-                    <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
-                      <PostCard post={post} {...post} />
-                    </Grid.Column>
-                  );
-                })}
-            </Transition.Group>
+            <GridColumn>loading</GridColumn>
           )}
         </Grid.Row>
       </Grid>

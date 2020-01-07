@@ -65,17 +65,19 @@ module.exports = gql`
     getChats: [Chat]!
     getMessages: [Message]!
     getMe: User!
+    getMyChats: User!
     getUsers: [User]
     getPosts: [Post]
     getPost(postId: ID!): Post
     getUser(userId: ID!): User!
-    getChat(chatId: ID!, pageNumber: Int): Chat!
+    getChat(chatId: ID!, pageNumber: Int, remainder: Int): Chat!
   }
   type Chat {
     id: ID!
     title: String!
     users: [User!]!
     messages: [Message!]!
+    messagesLength: Int!
     lastMessage: Message
     createdAt: String!
     updatedAt: String!

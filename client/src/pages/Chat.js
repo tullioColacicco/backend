@@ -18,13 +18,13 @@ import { LISTEN_FOR_MESSAGE } from "../query/liveChatSubscription";
 
 import { AuthContext } from "../context/auth";
 import ChatRoom from "../components/ChatRoom";
-import { relative } from "path";
 
 export default function Chat(props) {
   const [values, setValues] = useState({
     body: ""
   });
   const [page, setPage] = useState(1);
+
   const [loadMore, setLoadMore] = useState(true);
 
   const messagesEndRef = useRef(null);
@@ -53,11 +53,15 @@ export default function Chat(props) {
           query: FETCH_CHAT,
           variables: { chatId }
         });
+        setPage(page + 1);
+        // console.log(chat);
+        // console.log(subscriptionData);
         const myData = chat.getChat;
         const structure = {
           getChat: {
             id: myData.id,
             title: myData.title,
+            messagesLength: myData.messagesLength + 1,
             messages: [
               subscriptionData.data.newChatMessage,
               ...myData.messages
@@ -75,7 +79,7 @@ export default function Chat(props) {
         });
         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        console.log(messages.length);
+        // console.log(messages.length);
       } catch (error) {
         throw new Error(console.log(`error: ${error}`));
       }
@@ -88,8 +92,8 @@ export default function Chat(props) {
     fetchMore({
       variables: { chatId, pageNumber },
       updateQuery: (previousResult, { fetchMoreResult }) => {
-        // console.log(previousResult.getChat.messages);
-        console.log(fetchMoreResult.getChat.messages);
+        // console.log(previousResult);
+        // console.log(fetchMoreResult.getChat.messages);
         if (!fetchMoreResult) {
           return previousResult;
         }
@@ -100,6 +104,7 @@ export default function Chat(props) {
           getChat: {
             id: previousResult.getChat.id,
             title: previousResult.getChat.title,
+            messagesLength: fetchMoreResult.getChat.messagesLength,
             messages: [
               ...previousResult.getChat.messages,
               ...fetchMoreResult.getChat.messages
@@ -111,7 +116,7 @@ export default function Chat(props) {
         };
       }
     });
-    console.log(messages.length);
+    // console.log(messages.length);
   }
 
   function onSubmit(event) {
@@ -125,6 +130,7 @@ export default function Chat(props) {
   if (data) {
     chat = data.getChat;
     messages = chat.messages;
+
     // console.log(chat.messages);
   }
 
@@ -140,36 +146,73 @@ export default function Chat(props) {
   function handleScroll() {
     if (messagesEndRef && messagesEndRef.current.scrollTop === 0) {
       setPage(page + 1);
+      // console.log(page);
       pageNumber = messages.length;
-      fetchMore({
-        variables: { chatId, pageNumber },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          // console.log(previousResult.getChat.messages);
-          console.log(fetchMoreResult.getChat.messages);
-          if (!fetchMoreResult) {
-            return previousResult;
-          }
-          if (fetchMoreResult.getChat.messages.length < 5) {
-            setLoadMore(false);
-          }
-          return {
-            getChat: {
-              id: previousResult.getChat.id,
-              title: previousResult.getChat.title,
-              messages: [
-                ...previousResult.getChat.messages,
-                ...fetchMoreResult.getChat.messages
-              ],
-
-              users: [...previousResult.getChat.users],
-              __typename: previousResult.getChat.__typename
+      // console.log(chat.messagesLength);
+      const remainder =
+        chat.messagesLength - page * 5 <= 5
+          ? chat.messagesLength - page * 5
+          : false;
+      if (remainder) {
+        // console.log(remainder);
+        fetchMore({
+          variables: { chatId, pageNumber, remainder },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            // console.log(previousResult);
+            // console.log(fetchMoreResult.getChat.messages);
+            if (!fetchMoreResult) {
+              return null;
             }
-          };
-        }
-      });
+            if (remainder) {
+              setLoadMore(false);
+              // console.log("hit");
+            }
+            return {
+              getChat: {
+                id: previousResult.getChat.id,
+                title: previousResult.getChat.title,
+                messagesLength: previousResult.getChat.messagesLength,
+                messages: [
+                  ...previousResult.getChat.messages,
+                  ...fetchMoreResult.getChat.messages
+                ],
 
-      console.log(messagesEndRef.current.scrollTop);
-      console.log(messagesEndRef.current.scrollHeight);
+                users: [...previousResult.getChat.users],
+                __typename: previousResult.getChat.__typename
+              }
+            };
+          }
+        });
+      } else {
+        fetchMore({
+          variables: { chatId, pageNumber },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            // console.log(previousResult);
+            // console.log(fetchMoreResult.getChat.messages);
+            if (!fetchMoreResult) {
+              return null;
+            }
+
+            return {
+              getChat: {
+                id: previousResult.getChat.id,
+                title: previousResult.getChat.title,
+                messagesLength: previousResult.getChat.messagesLength,
+                messages: [
+                  ...previousResult.getChat.messages,
+                  ...fetchMoreResult.getChat.messages
+                ],
+
+                users: [...previousResult.getChat.users],
+                __typename: previousResult.getChat.__typename
+              }
+            };
+          }
+        });
+
+        // console.log(messagesEndRef.current.scrollTop);
+        // console.log(messagesEndRef.current.scrollHeight);
+      }
     }
   }
 
@@ -177,20 +220,22 @@ export default function Chat(props) {
     <div>
       <Container>
         <Header textAlign="center">{chat.title}</Header>
-        <Button
-          primary={loadMore}
-          onClick={handleClick}
-          style={{ marginBottom: 20 }}
-        >
-          Load More {pageNumber}
-        </Button>
+        {page !== 1 && (
+          <Button
+            primary={loadMore}
+            onClick={handleClick}
+            style={{ marginBottom: 20 }}
+          >
+            Load More {pageNumber}
+          </Button>
+        )}
 
         <div
           ref={messagesEndRef}
-          onScroll={handleScroll}
+          onScroll={loadMore ? handleScroll : null}
           style={{
             overflow: "auto",
-            height: 500,
+            height: 400,
             display: "flex",
             flexDirection: "column-reverse"
           }}

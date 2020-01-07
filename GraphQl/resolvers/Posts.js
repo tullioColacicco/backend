@@ -96,22 +96,58 @@ module.exports = {
       ]);
       return me;
     },
+    async getMyChats(_, __, context) {
+      const user = checkAuth(context);
+      const me = await User.findById(user.id).populate([
+        { path: "posts", populate: { path: "user" } },
+        { path: "friends", populate: { path: "posts" } },
+        {
+          path: "chats",
+          populate: [
+            { path: "users" },
+            {
+              path: "messages",
+              populate: { path: "sender" }
+            }
+          ]
+        }
+      ]);
+      return me;
+    },
     async getUser(_, { userId }, context) {
       const user = checkAuth(context);
       const person = await User.findById(userId).populate([
         { path: "posts", populate: { path: "user" } },
-        { path: "friends", populate: { path: "posts" } }
+        { path: "friends", populate: { path: "posts" } },
+        {
+          path: "chats",
+          populate: [
+            { path: "users" },
+            {
+              path: "messages",
+              populate: { path: "sender" }
+            }
+          ]
+        }
       ]);
       return person;
     },
-    async getChat(_, { chatId, pageNumber }, context) {
+    async getChat(_, { chatId, pageNumber, remainder }, context) {
       let page = -5;
+      let limit = 5;
       if (pageNumber) page = -1 * pageNumber + -5;
-
+      if (remainder) limit = remainder;
+      console.log(page);
       const user = checkAuth(context);
-      const chat = await Chat.findById(chatId, {
-        messages: { $slice: [page, 5] }
-      }).populate([
+
+      const count = await Chat.findById(chatId);
+      const chat = await Chat.findById(
+        chatId,
+
+        {
+          messages: { $slice: [page, limit] }
+        }
+      ).populate([
         { path: "users" },
         {
           path: "messages",
@@ -121,6 +157,7 @@ module.exports = {
         }
       ]);
 
+      console.log(count.messages.length / 5);
       return chat;
     },
     async getPost(_, { postId }) {

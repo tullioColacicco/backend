@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const FETCH_USER = gql`
+export const GET_LOCKED_USER = gql`
   query getUser($userId: ID!) {
     getUser(userId: $userId) {
       username
@@ -19,16 +19,7 @@ export const FETCH_USER = gql`
         id
         username
       }
-      chats {
-        id
-        users {
-          id
-        }
-      }
       posts {
-        user {
-          id
-        }
         id
         body
         createdAt

@@ -12,6 +12,7 @@ export default function DeleteButton({ postId, commentId, callback }) {
 
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
   const [deletePostOrMutation] = useMutation(mutation, {
+    refetchQueries: [{ query: FETCH_POSTS_QUERY }],
     update(proxy) {
       setConfirmOpen(false);
       if (!commentId) {
@@ -27,6 +28,9 @@ export default function DeleteButton({ postId, commentId, callback }) {
             getMe: {
               username: myData.username,
               friends: [...myData.friends],
+              profileDescription: { ...myData.profileDescription },
+              profilePicture: myData.profilePicture,
+              photos: [...myData.photos],
               id: myData.id,
               posts: [...myPosts],
               __typename: myData.__typename
@@ -38,14 +42,16 @@ export default function DeleteButton({ postId, commentId, callback }) {
             data: structure
           });
 
-          const data = proxy.readQuery({
-            query: FETCH_POSTS_QUERY
-          });
-          const posts = data.getPosts.filter(p => p.id !== postId);
-          proxy.writeQuery({
-            query: FETCH_POSTS_QUERY,
-            data: { getPosts: posts }
-          });
+          // const data = proxy.readQuery({
+          //   query: FETCH_POSTS_QUERY
+          // });
+          // console.log(data);
+          // const posts = data.getPosts.filter(p => p.id !== postId);
+          // proxy.writeQuery({
+          //   query: FETCH_POSTS_QUERY,
+          //   data: { getPosts: [...posts] }
+          // });
+          // console.log(data);
         } catch (error) {
           throw new Error(console.log(`error: ${error}`));
         }

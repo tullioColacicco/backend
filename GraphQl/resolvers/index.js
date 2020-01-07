@@ -10,6 +10,10 @@ module.exports = {
     likeCount: parent => parent.likes.length,
     commentCount: parent => parent.comments.length
   },
+  // Chat: {
+  //   messageLength: parent => parent.messages.length
+  //   // commentCount: parent => parent.comments.length
+  // },
   Query: {
     ...postResolvers.Query
   },

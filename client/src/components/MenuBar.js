@@ -1,16 +1,26 @@
 import React, { useState, useContext } from "react";
 import { Menu } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { useApolloClient } from "@apollo/react-hooks";
 
 import { AuthContext } from "../context/auth";
 
-export default function MenuBar() {
+export default function MenuBar(props) {
   const { user, logout } = useContext(AuthContext);
+  const client = useApolloClient();
   const pathname = window.location.pathname;
   const path = pathname === "/" ? "home" : pathname.substr(1);
   const [activeItem, setActiveItem] = useState(path);
 
+  function handleLogOutCache(props) {
+    localStorage.clear();
+    client.clearStore();
+    logout();
+    // props.client.resetStore();
+    // props.history.push("/");
+  }
   const handleItemClick = (e, { name }) => setActiveItem(name);
+  // console.log(props);
   const menuBar = user ? (
     <div>
       <Menu pointing secondary size="huge" color="blue">
@@ -29,7 +39,11 @@ export default function MenuBar() {
           to={`/MyProfile/${user.id}`}
         />
         <Menu.Menu position="right">
-          <Menu.Item name="logout" active onClick={logout} />
+          <Menu.Item
+            name="logout"
+            active
+            onClick={(logout, handleLogOutCache)}
+          />
         </Menu.Menu>
       </Menu>
     </div>
