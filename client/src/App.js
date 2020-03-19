@@ -21,6 +21,7 @@ import FriendProfile from "./pages/FriendProfile";
 import LockedProfile from "./pages/LockedProfile";
 import Chat from "./pages/Chat";
 import Images from "./pages/Images";
+import UserImage from "./pages/UserImage";
 
 import HamBurgerMenu from "./components/HamburgerMenu";
 
@@ -45,6 +46,7 @@ function App(props) {
             <Route exact path="/friends" component={Friends} />
             <Route exact path="/messages" component={Messages} />
             <Route exact path="/images" component={Images} />
+            <Route exact path="/images/:id" component={UserImage} />
             <Route exact path="/friends/:friendId" component={FriendProfile} />
             <LoggedOut
               exact

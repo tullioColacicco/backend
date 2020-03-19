@@ -160,6 +160,19 @@ module.exports = {
       console.log(count.messages.length / 5);
       return chat;
     },
+    async getPhoto(_, { photoId }, context) {
+      const user = checkAuth(context);
+
+      const me = await User.findById(user.id);
+      console.log(photoId);
+      if (me) {
+        const myPhoto = me.photos.filter(photo => photo.id === photoId);
+        console.log(myPhoto);
+        return myPhoto[0];
+      } else {
+        throw new UserInputError("Post not found");
+      }
+    },
     async getPost(_, { postId }) {
       try {
         const post = await Post.findById(postId).populate("user");

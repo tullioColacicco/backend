@@ -70,6 +70,7 @@ module.exports = gql`
     getPosts: [Post]
     getPost(postId: ID!): Post
     getUser(userId: ID!): User!
+    getPhoto(photoId: ID!): Photo!
     getChat(chatId: ID!, pageNumber: Int, remainder: Int): Chat!
   }
   type Chat {

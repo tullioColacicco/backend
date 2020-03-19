@@ -3,15 +3,15 @@ import React, { useContext, useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Link } from "react-router-dom";
 import {
-  Card,
+  // Card,
   // Button,
   Grid,
-  Header,
-  Image,
-  Icon,
+  // Header,
+  // Image,
+  // Icon,
   // Checkbox,
   // CardContent,
-  Transition,
+  // Transition,
   GridColumn
   // Label
   //   Form
@@ -21,21 +21,19 @@ import { FETCH_USER_POSTS } from "../query/fetchcurrentuserposts";
 import { UPLOAD_FILE } from "../query/uploadFile";
 
 import { AuthContext } from "../context/auth";
-import PostCard from "../components/PostCard";
-import PostForm from "../components/PostForm";
+
 import Images from "../components/Images";
-import ProfileDescription from "../components/ProfileDescription";
 // import LikeButton from "../components/LikeButton";
 // import DeleteButton from "../components/DeleteButton";
 // import MyPopup from "../util/MyPopup";
 
-export default function UserProfile(props) {
+export default function UserImages(props) {
   const userId = props.match.params.userId;
   // console.log(userId);
   const { user } = useContext(AuthContext);
   const [file, setFile] = useState();
   // const [isChecked, setIsChecked] = useState([]);
-
+  const userImagesPage = true;
   const { loading, data } = useQuery(FETCH_USER_POSTS);
   const [uploadFile] = useMutation(UPLOAD_FILE, {
     variables: { file },
@@ -61,14 +59,14 @@ export default function UserProfile(props) {
     }
   });
 
-  function handleFile(event) {
-    // console.log(event.target.files[0]);
-    setFile(event.target.files[0]);
-  }
+  // function handleFile(event) {
+  //   // console.log(event.target.files[0]);
+  //   setFile(event.target.files[0]);
+  // }
 
-  function handleSubmit() {
-    uploadFile();
-  }
+  // function handleSubmit() {
+  //   uploadFile();
+  // }
   // function handleCheckBox(url) {
   //   // console.log(url);
   //   //   if (isChecked.includes(id)) {
@@ -107,6 +105,7 @@ export default function UserProfile(props) {
                 <Images
                   key={index}
                   photo={photo}
+                  userImagesPage={userImagesPage}
                   imageSize={"medium"}
                   {...photo}
                 />

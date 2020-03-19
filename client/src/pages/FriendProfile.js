@@ -41,9 +41,9 @@ export default function FriendProfile(props) {
     photos = data.getUser.photos;
     // console.log(data);
   }
-
+  console.log(data);
   let currentChatId = false;
-
+  console.log(currentChatId);
   const chats = data ? data.getUser.chats : "loading";
 
   if (chats !== "loading") {
